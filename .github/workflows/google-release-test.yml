@@ -43,24 +43,24 @@ jobs:
     - run: |
         gcloud auth configure-docker -q
 
-    # Get tags
-    - name: Fetching tags
-      run: git fetch --tags
-
-    # Get latest release number
-    - name: Get release number
-      id: release
-      run: echo "::set-output name=release::$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')"
-
-    - name: Update release number
-      run: |-
-        git tag ${{ steps.release.outputs.release }} && git push --tags
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v5.6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_prefix: rc-
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: Release ${{ steps.tag_version.outputs.new_tag }}
+        body: ${{ steps.tag_version.outputs.changelog }}
 
     # Build the Docker image
     - name: Build
       run: |-
         docker build \
-          --tag "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}" \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.tag_version.outputs.new_tag }}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
@@ -68,4 +68,4 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}"
+        docker push "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.tag_version.outputs.new_tag }}"
