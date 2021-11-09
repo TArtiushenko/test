@@ -22,6 +22,7 @@ env:
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
   REPOSITORY: test
+  ACCOUNT: artifact-registry@valid-volt-331607.iam.gserviceaccount.com
 
 
 jobs:
@@ -43,7 +44,9 @@ jobs:
     # Configure Docker to use the gcloud command-line tool as a credential
     # helper for authentication
     - run: |-
-        gcloud auth activate-service-account
+        echo "${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}" >/tmp/gcp_key.json
+    - run: |-
+        gcloud auth activate-service-account $ACCOUNT --key-file=${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}
     - run: |-
         gcloud --quiet auth configure-docker $GCP_ZONE-docker.pkg.dev
 
