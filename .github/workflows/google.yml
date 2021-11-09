@@ -43,13 +43,14 @@ jobs:
     - run: |
         gcloud auth configure-docker -q
 
+    # Get tags
+    - name: Fetching tags
+      run: git fetch --tags
+
     # Get latest release number
     - name: Get release number
       id: release
       run: echo "::set-output name=release::$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')"
-      
-    - run: git fetch --tags && git tag
-    - run: git tag | egrep rc-[0-9]
 
     - name: Update release number
       run: |-
