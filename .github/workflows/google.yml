@@ -47,6 +47,7 @@ jobs:
     - name: Get release number
       id: release
       run: echo "::set-output name=release::$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')"
+      run: echo ${{ steps.release.outputs.release }}
 
     - name: Update release number
       run: |-
