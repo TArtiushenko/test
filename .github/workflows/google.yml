@@ -15,7 +15,7 @@ name: Build and Deploy to GKE
 on:
   pull_request:
     branches:
-      - release
+      - main
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
@@ -47,20 +47,20 @@ jobs:
     - name: Fetching tags
       run: git fetch --tags
 
-    # Get latest release number
-    - name: Get release number
-      id: release
-      run: echo "::set-output name=release::$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')"
+    # Get latest version number
+    - name: Get version number
+      id: version
+      run: echo "::set-output name=version::$((git tag | egrep v[0-9]\.[0-9]\.[0-9] || echo v1.0.-1 ) | sort --version-sort -r | tail -n1 | awk -F. -v OFS=. '{$NF++;print}')"
 
-    - name: Update release number
+    - name: Update version number
       run: |-
-        git tag ${{ steps.release.outputs.release }} && git push --tags
+        git tag ${{ steps.version.outputs.version }} && git push --tags
 
     # Build the Docker image
     - name: Build
       run: |-
         docker build \
-          --tag "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}" \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.version.outputs.version }}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
@@ -68,4 +68,4 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}"
+        docker push "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.version.outputs.version }}"
