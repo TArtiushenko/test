@@ -56,7 +56,7 @@ jobs:
     - name: Build
       run: |-
         docker build \
-          --tag "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ steps.release.outputs.release }}" \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
@@ -64,4 +64,4 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ steps.release.outputs.release }}"
+        docker push "gcr.io/$PROJECT_ID/$IMAGE:${{ steps.release.outputs.release }}"
