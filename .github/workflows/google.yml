@@ -22,8 +22,7 @@ env:
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
   REPOSITORY: test
-  ACCOUNT: artifact-registry@valid-volt-331607.iam.gserviceaccount.com
-
+  ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
 jobs:
   setup-build-publish-deploy:
@@ -41,11 +40,15 @@ jobs:
         service_account_key: ${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}
         project_id: ${{ secrets.GCP_PROJECT }}
 
-    # Activate service account
-    - run: |-
+    # Command activate-service-account works only with json file, so we need to create one
+    - name: Create json file for activate-service-account
+      run: |-
         echo '${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}' > /tmp/gcp_key.json
-    - run: |-
-         gcloud auth activate-service-account $ACCOUNT --key-file=/tmp/gcp_key.json
+
+    # Activate service account
+    - name: Activate service account
+      run: |-
+        gcloud auth activate-service-account $ACCOUNT --key-file=/tmp/gcp_key.json
 
     # Configure docker to use the gcloud command-line tool as a credential helper
     - run: |-
