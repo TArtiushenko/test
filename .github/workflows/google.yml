@@ -68,4 +68,4 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "$GCP_ZONE-docker-pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:dev-${{ steps.timestamp.outputs.timestamp }}"
+        docker push "$GCP_ZONE-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:dev-${{ steps.timestamp.outputs.timestamp }}"
