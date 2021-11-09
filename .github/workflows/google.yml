@@ -22,7 +22,6 @@ env:
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
   REPOSITORY: test
-  ACCOUNT: artifact-registry@valid-volt-331607.iam.gserviceaccount.com
 
 
 jobs:
@@ -36,19 +35,11 @@ jobs:
       uses: actions/checkout@v2
 
     # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0.2.0
+    - uses:  GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         service_account_key: ${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}
         project_id: ${{ secrets.GCP_PROJECT }}
-
-    # Configure Docker to use the gcloud command-line tool as a credential
-    # helper for authentication
-    - run: |-
-        echo "${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}" >/tmp/gcp_key.json
-    - run: |-
-        gcloud auth activate-service-account $ACCOUNT --key-file=${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}
-    - run: |-
-        gcloud --quiet auth configure-docker $GCP_ZONE-docker.pkg.dev
+        export_default_credentials: true
 
     # Get current timestamp
     - name: Timestamp
@@ -64,6 +55,10 @@ jobs:
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
 
+    # Configure docker to use the gcloud command-line tool as a credential helper
+    - run: |
+        gcloud auth configure-docker -q
+          
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
