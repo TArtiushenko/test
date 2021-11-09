@@ -43,11 +43,16 @@ jobs:
     - run: |
         gcloud auth configure-docker -q
 
+    # Get latest release number
+    - name: Get release number
+      id: release
+      run: echo "::set-output name=release::$(gcloud container images list-tags gcr.io/$PROJECT_ID/$IMAGE --filter='tags:rc-*' --limit=1 2>/dev/null | tail -n1 | awk -F ' ' '{print $2}' | awk -F 'rc-' '{print $2 +1}')"
+
     # Build the Docker image
     - name: Build
       run: |-
         docker build \
-          --tag "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ github.run_number }}" \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ steps.release.outputs.release }}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
@@ -55,4 +60,4 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ github.run_number }}"
+        docker push "gcr.io/$PROJECT_ID/$IMAGE:rc-${{ steps.release.outputs.release }}"
