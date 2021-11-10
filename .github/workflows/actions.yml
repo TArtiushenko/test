@@ -56,6 +56,22 @@ jobs:
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
             --build-arg GITHUB_REF="$GITHUB_REF" \
             .
+      # On failed build send message to slack shannel
+      - name: Sending failed message
+        if: ${{ failure() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Build failed $IMAGE_TAG'
+          SLACK_COLOR: ${{ job.status }}
+
+      # On success
+      - name: Sending success message
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Build successful $IMAGE_TAG'
+          SLACK_COLOR: ${{ job.status }}
 
       # After successful build add tag
       - name: Update release number
