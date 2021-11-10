@@ -38,7 +38,7 @@ jobs:
       # Get image prefix
       - name: Image tag dev
         if: ${{ github.ref == 'refs/heads/dev' }}
-        run: echo "$(date +'dev-%s')" >> $IMAGE_TAG
+        run: echo "IMAGE_TAG=dev-$(date +'%s')" >> $GITHUB_ENV
 
       - name: Image tag release
         if: ${{ github.ref == 'refs/heads/releasse' }}
