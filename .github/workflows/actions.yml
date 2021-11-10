@@ -62,7 +62,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build failed $IMAGE_TAG"
+          SLACK_MESSAGE: "Build failed ${{ env.IMAGE_TAG }}"
           SLACK_COLOR: ${{ job.status }}
 
       # On success
@@ -70,7 +70,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build successful $IMAGE_TAG"
+          SLACK_MESSAGE: "Build successful ${{ env.IMAGE_TAG }}"
           SLACK_COLOR: ${{ job.status }}
 
       # After successful build add tag
