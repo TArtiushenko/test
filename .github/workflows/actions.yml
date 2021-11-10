@@ -37,7 +37,7 @@ jobs:
 
       #debug
       - name: current ref
-        run: echo ${{ github.ref }}
+        run: echo ${GITHUB_REF#refs/heads/}
 
       # Get image prefix
       - name: Image tag dev
