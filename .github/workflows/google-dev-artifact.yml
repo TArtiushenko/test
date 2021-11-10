@@ -1,5 +1,5 @@
 # This workflow will build a docker container, publish it to Google Container Registry, and deploy it to GKE when there is a push to the main branch.
-# test push github.number_id
+#
 # To configure this workflow:
 #
 # 1. Ensure that your repository contains the necessary configuration for your Google Kubernetes Engine cluster, including deployment.yml, kustomization.yml, service.yml, etc.
@@ -10,7 +10,7 @@
 #
 # For more support on how to run the workflow, please visit https://github.com/google-github-actions/setup-gcloud/tree/master/example-workflows/gke
 
-name: Build and Deploy to GKE
+name: Build and Deploy to Artifact Registry
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Push
     runs-on: ubuntu-latest
-    environment: production
+    environment: development
 
     steps:
     - name: Checkout
@@ -52,7 +52,7 @@ jobs:
 
     # Configure docker to use the gcloud command-line tool as a credential helper
     - run: |
-        gcloud auth configure-docker -q
+        gcloud auth configure-docker $GCP_ZONE-docker.pkg.dev
 
     # Get current timestamp
     - name: Timestamp
