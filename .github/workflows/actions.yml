@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches: [dev]
-      paths-ignore: 
-        - '.github/workflows/**'
+    paths-ignore: 
+      - '.github/workflows/**'
   pull_request:
     branches: [release, main]
 
