@@ -52,7 +52,7 @@ jobs:
 
     # Configure docker to use the gcloud command-line tool as a credential helper
     - run: |
-        gcloud auth configure-docker -q
+        gcloud auth configure-docker $GCP_ZONE-docker.pkg.dev
 
     # Get current timestamp
     - name: Timestamp
