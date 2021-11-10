@@ -38,15 +38,15 @@ jobs:
       # Get image prefix
       - name: Image tag dev
         if: ${{ github.ref == 'refs/heads/dev' }}
-        run: echo "::set-env name=IMAGE_TAG::$(date +'dev-%s')"
+        run: echo "$(date +'dev-%s')" >> $IMAGE_TAG
 
       - name: Image tag release
         if: ${{ github.ref == 'refs/heads/releasse' }}
-        run: echo "::set-env name=IMAGE_TAG::$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')"
+        run: echo "$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | tail -n1 | awk -F 'rc-' '{ print "rc-" $2 +1}')" >> $IMAGE_TAG
 
       - name: Image tag version
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: echo "::set-env name=IMAGE_TAG::$((git tag | egrep v[0-9]\.[0-9]\.[0-9] || echo v1.0.-1 ) | sort --version-sort -r | tail -n1 | awk -F. -v OFS=. '{$NF++;print}')"
+        run: echo "$((git tag | egrep v[0-9]\.[0-9]\.[0-9] || echo v1.0.-1 ) | sort --version-sort -r | tail -n1 | awk -F. -v OFS=. '{$NF++;print}')" >> $IMAGE_TAG
 
       # Build the Docker image
       - name: Build
