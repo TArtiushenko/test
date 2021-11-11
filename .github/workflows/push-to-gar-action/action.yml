@@ -1,0 +1,22 @@
+name: 'Push to google artifact registry'
+inputs:
+  zone:
+    required: true
+    default: europe
+  project-id: 
+    required: true
+    default: 'project'
+  repository:
+    required: false
+  image:
+    required: true
+    default: 'image'
+  tag:
+    requred: false
+    default: 'latest'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        docker push "${{ inputs.zone }}-docker.pkg.dev/${{ inputs.project-id }}/${{ inputs.repository }}/${{ inputs.image }}:${{ inputs.tag }}"
+      shell: bash
