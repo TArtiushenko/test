@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches: [dev]
-#    paths-ignore: 
-#      - '.github/workflows/**'
+    paths-ignore: 
+      - '.github/workflows/**'
   pull_request:
     branches: [release, main]
 
@@ -21,6 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Get tags
+      - name: Fetching tags
+        if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
+        run: git fetch --tags
+
       # Setup gcloud CLI
       - uses:  google-github-actions/setup-gcloud@v0.2.0
         with:
@@ -33,8 +38,17 @@ jobs:
           gcloud auth configure-docker -q
 
       # Get image prefix
-      - name: Get new tag
-        uses: ./.github/workflows/get-new-tag
+      - name: Image tag dev
+        if: ${{ github.ref_name == 'dev' }}
+        run: echo "IMAGE_TAG=dev-$(date +'%s')" >> $GITHUB_ENV
+
+      - name: Image tag release
+        if: ${{ github.base_ref == 'release' }}
+        run: echo "IMAGE_TAG=$((git tag | egrep rc-[0-9] || echo rc-0 ) | sort --version-sort -r | head -1 | awk -F 'rc-' '{ print "rc-" $2 +1}')" >> $GITHUB_ENV
+
+      - name: Image tag version
+        if: ${{ github.base_ref == 'main' }}
+        run: echo "IMAGE_TAG=$((git tag | egrep v[0-9]\.[0-9]\.[0-9] || echo v1.0.-1 ) | sort --version-sort -r | head -1 | awk -F. -v OFS=. '{$NF++;print}')" >> $GITHUB_ENV
 
       # Build the Docker image
       - name: Build
@@ -69,8 +83,5 @@ jobs:
 
       # Push the Docker image to Google Container Registry
       - name: Publish
-        uses: ./.github/workflows/push-to-gcr-action
-        with: 
-          project-id: $PROJECT_ID
-          image: $IMAGE
-          tag:  $IMAGE_TAG
+        run: |-
+          docker push "gcr.io/$PROJECT_ID/$IMAGE:$IMAGE_TAG"

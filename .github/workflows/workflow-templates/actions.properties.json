@@ -1,0 +1,8 @@
+{
+    "name": "CI",
+    "description": "CI workflow template.",
+    "iconName": "example-icon",
+    "categories": [
+        "Go"
+    ]
+}
