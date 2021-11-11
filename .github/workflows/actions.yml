@@ -63,7 +63,7 @@ jobs:
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
         with: 
-          service-accout-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           project-id: $PROJECT_ID
           image: $IMAGE
           tag:  $IMAGE_TAG
