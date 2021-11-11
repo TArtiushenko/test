@@ -22,8 +22,8 @@ runs:
   using: "composite"
   steps:
     - id: gcr-tag
-      run: echo "::set-output name=tag::gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
+      run: echo "::set-output name=tag::$(echo gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }})"
       shell: bash
     - id: gar-tag
-      run: echo "::set-output name=tag::${{ inputs.zone }}-docker.pkg.dev/${{ inputs.project-id }}/${{ inputs.repository }}/${{ inputs.image-name }}:${{ inputs.image-version }}"
+      run: echo "::set-output name=tag::$(echo ${{ inputs.zone }}-docker.pkg.dev/${{ inputs.project-id }}/${{ inputs.repository }}/${{ inputs.image-name }}:${{ inputs.image-version }})"
       shell: bash
