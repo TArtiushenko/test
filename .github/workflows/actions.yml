@@ -21,11 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Get tags
-      - name: Fetching tags
-        if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
-        run: git fetch --tags
-
       # Setup gcloud CLI
       - uses:  google-github-actions/setup-gcloud@v0.2.0
         with:

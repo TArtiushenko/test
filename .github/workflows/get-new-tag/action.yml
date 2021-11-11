@@ -1,7 +1,12 @@
 name: Get new tag
+description: Generate new tag and sets it to env $IMAGE_TAG
 runs:
   using: "composite"
   steps:
+    - if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
+      run: git fetch --tags
+      shell: bash
+
     - if: ${{ github.ref_name == 'dev' }}
       run: echo "IMAGE_TAG=dev-$(date +'%s')" >> $GITHUB_ENV
       shell: bash
