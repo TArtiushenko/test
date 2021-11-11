@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Get image version tag TODO rename IMAGE_TAG to IMAGE_VERSION
+      # Get image version tag TODO: rename IMAGE_TAG to IMAGE_VERSION
       - name: Get new tag
         uses: ./.github/workflows/get-new-tag
 
@@ -48,28 +48,18 @@ jobs:
             --build-arg GITHUB_REF="$GITHUB_REF" \
             .
 
-      # On failed build send message to slack shannel
+      # Send status message depending job.status
       - name: Sending failed message
-        if: ${{ failure() }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build failed ${{ env.IMAGE_TAG }}"
-          SLACK_COLOR: ${{ job.status }}
-
-      # On success
-      - name: Sending success message
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build successful ${{ env.IMAGE_TAG }}"
+          SLACK_MESSAGE: "Built ${{ env.IMAGE_TAG }} ${{ job.status }}"
           SLACK_COLOR: ${{ job.status }}
 
       # After successful build add tag
       - name: Update release number
         if: ${{ github.base_ref == 'main' || github.base_ref == 'release' }}
-        run: |-
-          git tag $IMAGE_TAG && git push --tags
+        run: git tag $IMAGE_TAG && git push --tags
 
       # Push the Docker image to Google Container Registry
       - name: Publish
