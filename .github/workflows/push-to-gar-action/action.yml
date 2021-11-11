@@ -8,14 +8,9 @@ inputs:
   project-id: 
     required: true
     default: 'project'
-  repository:
-    required: false
   image:
     required: true
     default: 'image'
-  tag:
-    requred: false
-    default: 'latest'
 runs:
   using: "composite"
   steps:
@@ -28,8 +23,8 @@ runs:
       shell: bash
     - run: gcloud auth activate-service-account --key-file=/tmp/gcp_key.json
       shell: bash
-    - run: gcloud auth configure-docker $GCP_ZONE-docker.pkg.dev
+    - run: gcloud auth configure-docker ${{ inputs.zone }}-docker.pkg.dev
       shell: bash
     - run: |
-        docker push "${{ inputs.zone }}-docker.pkg.dev/${{ inputs.project-id }}/${{ inputs.repository }}/${{ inputs.image }}:${{ inputs.tag }}"
+        docker push "${{ inputs.image }}"
       shell: bash

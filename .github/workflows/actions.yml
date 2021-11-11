@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Get image version tag
+      # Get image version tag TODO rename IMAGE_TAG to IMAGE_VERSION
       - name: Get new tag
         uses: ./.github/workflows/get-new-tag
 
@@ -78,3 +78,16 @@ jobs:
           service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           project-id: ${{ secrets.GCP_PROJECT }}
           image: ${{ steps.image-tag.outputs.gcr-tag }}
+
+      # Re-tag image for artifact registry
+      - name: Re-tag
+        run: docker tag ${{ steps.image-tag.outputs.gcr-tag }} ${{ steps.image-tag.outputs.gar-tag }}
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        uses: ./.github/workflows/push-to-gar-action
+        with: 
+          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project-id: ${{ secrets.GCP_PROJECT }}
+          image: ${{ steps.image-tag.outputs.gar-tag }}
+          zone: $GCP_ZONE
