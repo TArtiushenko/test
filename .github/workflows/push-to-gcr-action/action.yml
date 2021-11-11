@@ -11,6 +11,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - run: gcloud auth configure-docker -q
+      shell: bash
     - run: |
         docker push "gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
       shell: bash
