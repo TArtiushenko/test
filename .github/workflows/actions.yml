@@ -84,3 +84,7 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
+        with: 
+          project-id: $PROJECT_ID
+          image: $IMAGE
+          tag:  $IMAGE_TAG
