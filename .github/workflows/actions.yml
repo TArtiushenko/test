@@ -33,7 +33,7 @@ jobs:
         id: image-tag
         uses: ./.github/workflows/docker-tag-action
         with:
-          project-id: ${{ secrets.GCP_PROJECT }}
+          project-id: $PROJECT_ID
           image-name: $IMAGE
           image-version: $IMAGE_TAG
           repository: 'test'
@@ -73,7 +73,7 @@ jobs:
       - name: Re-tag
         run: docker tag ${{ steps.image-tag.outputs.gcr-tag }} ${{ steps.image-tag.outputs.gar-tag }}
 
-      # Push the Docker image to Google Container Registry
+      # Push the Docker image to Google Artifact Registry
       - name: Publish
         uses: ./.github/workflows/push-to-gar-action
         with: 
