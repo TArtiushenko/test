@@ -5,6 +5,9 @@ on:
     branches: [dev]
 #    paths-ignore: 
 #      - '.github/workflows/**'
+    tags:
+      - 'v*'
+      - 'rc-*'
   pull_request:
     branches: [release, main]
 
@@ -21,56 +24,60 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Setup gcloud CLI
-      - uses:  google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT }}
-
-      # Configure docker to use the gcloud command-line tool as a credential helper
-      - name: auth docker
-        run: |
-          gcloud auth configure-docker -q
-
-      # Get image prefix
+      # Get image version tag TODO: rename IMAGE_TAG to IMAGE_VERSION
       - name: Get new tag
         uses: ./.github/workflows/get-new-tag
 
-      # Build the Docker image
+      # Generete tag for docker image
+      - name: Docker tag
+        id: image-tag
+        uses: ./.github/workflows/docker-tag-action
+        with:
+          project-id: ${{ secrets.GCP_PROJECT }}
+          image-name: $IMAGE
+          image-version: $IMAGE_TAG
+          repository: 'test'
+          zone: $GCP_ZONE
+
+      # Build the Docker image with tag for google container registry
       - name: Build
         run: |-
           docker build \
-            --tag "gcr.io/$PROJECT_ID/$IMAGE:$IMAGE_TAG" \
+            --tag "${{ steps.image-tag.outputs.gcr-tag }}" \
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
             --build-arg GITHUB_REF="$GITHUB_REF" \
             .
-      # On failed build send message to slack shannel
-      - name: Sending failed message
-        if: ${{ failure() }}
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build failed ${{ env.IMAGE_TAG }}"
-          SLACK_COLOR: ${{ job.status }}
 
-      # On success
-      - name: Sending success message
+      # Send status message depending job.status
+      - name: Sending status message
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Build successful ${{ env.IMAGE_TAG }}"
+          SLACK_MESSAGE: "Built ${{ env.IMAGE_TAG }} ${{ job.status }}"
           SLACK_COLOR: ${{ job.status }}
 
       # After successful build add tag
       - name: Update release number
-        if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
-        run: |-
-          git tag $IMAGE_TAG && git push --tags
+        if: ${{ github.base_ref == 'main' || github.base_ref == 'release' }}
+        run: git tag $IMAGE_TAG && git push --tags
 
       # Push the Docker image to Google Container Registry
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
         with: 
-          project-id: $PROJECT_ID
-          image: $IMAGE
-          tag:  $IMAGE_TAG
+          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project-id: ${{ secrets.GCP_PROJECT }}
+          image: ${{ steps.image-tag.outputs.gcr-tag }}
+
+      # Re-tag image for artifact registry
+      - name: Re-tag
+        run: docker tag ${{ steps.image-tag.outputs.gcr-tag }} ${{ steps.image-tag.outputs.gar-tag }}
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        uses: ./.github/workflows/push-to-gar-action
+        with: 
+          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project-id: ${{ secrets.GCP_PROJECT }}
+          image: ${{ steps.image-tag.outputs.gar-tag }}
+          zone: $GCP_ZONE
