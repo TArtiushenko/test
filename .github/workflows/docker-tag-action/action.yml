@@ -24,6 +24,6 @@ runs:
     - id: gcr-tag
       run: echo "::set-output name=tag::gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
       shell: bash
-    - id: gcr-tag
+    - id: gar-tag
       run: echo "::set-output name=tag::${{ inputs.zone }}-docker.pkg.dev/${{ inputs.project-id }}/${{ inputs.repository }}/${{ inputs.image-name }}:${{ inputs.image-version }}"
       shell: bash
