@@ -60,19 +60,17 @@ jobs:
           git tag $IMAGE_TAG && git push --tags
 
       # Setup gcloud CLI
-      - uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT }}
+#      - uses: google-github-actions/setup-gcloud@v0.2.0
+#        with:
+#          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+#          project_id: ${{ secrets.GCP_PROJECT }}
 
-      # Configure Docker to use the gcloud command-line tool as a credential
-      # helper for authentication
-      #- run: gcloud auth configure-docker -q
 
       # Push the Docker image to Google Container Registry
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
         with: 
-          project-id: $PROJECT_ID
+          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project-id: ${{ secrets.GCP_PROJECT }}
           image: $IMAGE
           tag:  $IMAGE_TAG
