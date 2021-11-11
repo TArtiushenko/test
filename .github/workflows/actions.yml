@@ -15,6 +15,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
+  REPOSITORY: test #for artifact registry only
 
 jobs:
   Setup-build-publish:
@@ -24,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Get image version tag TODO: rename IMAGE_TAG to IMAGE_VERSION
+      # Get image version tag
       - name: Get new tag
         uses: ./.github/workflows/get-new-tag
 
@@ -35,8 +36,8 @@ jobs:
         with:
           project-id: $PROJECT_ID
           image-name: $IMAGE
-          image-version: $IMAGE_TAG
-          repository: 'test'
+          image-version: $IMAGE_VERSION
+          repository: $REPOSITORY
           zone: $GCP_ZONE
 
       # Build the Docker image with tag for google container registry
@@ -59,7 +60,7 @@ jobs:
       # After successful build add tag
       - name: Update release number
         if: ${{ github.base_ref == 'main' || github.base_ref == 'release' }}
-        run: git tag $IMAGE_TAG && git push --tags
+        run: git tag $IMAGE_VERSION && git push --tags
 
       # Push the Docker image to Google Container Registry
       - name: Publish
