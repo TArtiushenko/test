@@ -24,9 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # check recursion
-      - run: fail
-
       # Setup gcloud CLI
       - uses:  google-github-actions/setup-gcloud@v0.2.0
         with:
