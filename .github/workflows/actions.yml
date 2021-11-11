@@ -5,6 +5,9 @@ on:
     branches: [dev]
 #    paths-ignore: 
 #      - '.github/workflows/**'
+    tags:
+      - 'v*'
+      - 'rc-*'
   pull_request:
     branches: [release, main]
 
@@ -20,6 +23,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      # debug 
+      - name: get event name and ref
+        run: echo ${{ github.event_name }} ${{ github.base_ref }} ${{ github.ref_name }}
+
+      - run: fail simulate
 
       # Setup gcloud CLI
       - uses:  google-github-actions/setup-gcloud@v0.2.0
@@ -63,7 +72,7 @@ jobs:
 
       # After successful build add tag
       - name: Update release number
-        if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
+        if: ${{ (github.base_ref == 'main' ||  github.base_ref == 'release') && github.event_name != 'tag'}}
         run: |-
           git tag $IMAGE_TAG && git push --tags
 
