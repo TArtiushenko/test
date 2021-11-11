@@ -49,7 +49,7 @@ jobs:
             .
 
       # Send status message depending job.status
-      - name: Sending failed message
+      - name: Sending status message
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
