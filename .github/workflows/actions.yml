@@ -59,13 +59,6 @@ jobs:
         run: |-
           git tag $IMAGE_TAG && git push --tags
 
-      # Setup gcloud CLI
-#      - uses: google-github-actions/setup-gcloud@v0.2.0
-#        with:
-#          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-#          project_id: ${{ secrets.GCP_PROJECT }}
-
-
       # Push the Docker image to Google Container Registry
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
