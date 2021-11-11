@@ -32,12 +32,12 @@ jobs:
       - name: Docker tag
         id: image-tag
         uses: ./.github/workflows/docker-tag-action
-          with:
-            project-id: ${{ secrets.GCP_PROJECT }}
-            image-name: $IMAGE
-            image-version: $IMAGE_TAG
-            repository: 'test'
-            zone: $GCP_ZONE
+        with:
+          project-id: ${{ secrets.GCP_PROJECT }}
+          image-name: $IMAGE
+          image-version: $IMAGE_TAG
+          repository: 'test'
+          zone: $GCP_ZONE
 
       # Build the Docker image with tag for google container registry
       - name: Build
