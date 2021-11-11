@@ -14,3 +14,4 @@ runs:
   steps:
     - run: |
         docker push "gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
+      shell: bash
