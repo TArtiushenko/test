@@ -1,0 +1,29 @@
+name: 'Push to google artifact registry'
+inputs:
+  service-account-key:
+    required: true
+  zone:
+    required: true
+    default: europe
+  project-id: 
+    required: true
+    default: 'project'
+  image:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses:  google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ inputs.service-account-key }}
+        project_id: ${{ inputs.project-id }}
+
+    - run: echo '${{ inputs.service-account-key }}' > /tmp/gcp_key.json
+      shell: bash
+    - run: gcloud auth activate-service-account --key-file=/tmp/gcp_key.json
+      shell: bash
+    - run: gcloud auth configure-docker ${{ inputs.zone }}-docker.pkg.dev
+      shell: bash
+    - run: |
+        docker push "${{ inputs.image }}"
+      shell: bash

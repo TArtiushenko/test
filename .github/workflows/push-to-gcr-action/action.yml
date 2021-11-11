@@ -1,17 +1,20 @@
 name: 'Push to gcr'
 inputs:
+  service-account-key:
+    required: true
   project-id: 
     required: true
-    default: 'project'
   image:
     required: true
-    default: 'image'
-  tag:
-    requred: false
-    default: 'latest'
 runs:
   using: "composite"
   steps:
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ inputs.service-account-key }}
+        project_id: ${{ inputs.project-id }}
+    - run: gcloud auth configure-docker -q
+      shell: bash
     - run: |
-        docker push "gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
+        docker push "${{ inputs.image }}"
       shell: bash
