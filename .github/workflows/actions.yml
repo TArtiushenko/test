@@ -5,6 +5,9 @@ on:
     branches: [dev]
 #    paths-ignore: 
 #      - '.github/workflows/**'
+    tags:
+      - 'v*'
+      - 'rc-*'
   pull_request:
     branches: [release, main]
 
@@ -63,7 +66,7 @@ jobs:
 
       # After successful build add tag
       - name: Update release number
-        if: ${{ github.base_ref == 'main' ||  github.base_ref == 'release' }}
+        if: ${{ github.base_ref == 'main' || github.base_ref == 'release' }}
         run: |-
           git tag $IMAGE_TAG && git push --tags
 
