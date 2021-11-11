@@ -10,7 +10,6 @@ inputs:
     default: 'project'
   image:
     required: true
-    default: 'image'
 runs:
   using: "composite"
   steps:
