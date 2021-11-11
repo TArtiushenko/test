@@ -45,7 +45,7 @@ jobs:
       run: |-
         echo '${{ secrets.GCP_ARTIFACT_REGISTERY_KEY }}' > /tmp/gcp_key.json
 
-    # Activate service account
+    # Activate service account TODO fromJson extract account from account key
     - name: Activate service account
       run: |-
         gcloud auth activate-service-account $ACCOUNT --key-file=/tmp/gcp_key.json
