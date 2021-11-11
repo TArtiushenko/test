@@ -24,22 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Setup gcloud CLI
-      - uses:  google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT }}
-
-      # Configure docker to use the gcloud command-line tool as a credential helper
-      - name: auth docker
-        run: |
-          gcloud auth configure-docker -q
-
       # Get image prefix
       - name: Get new tag
         uses: ./.github/workflows/get-new-tag
 
-      # Build the Docker image
+      # Build the Docker image with tag for google container registry
       - name: Build
         run: |-
           docker build \
@@ -74,6 +63,7 @@ jobs:
       - name: Publish
         uses: ./.github/workflows/push-to-gcr-action
         with: 
+          service-accout-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           project-id: $PROJECT_ID
           image: $IMAGE
           tag:  $IMAGE_TAG
