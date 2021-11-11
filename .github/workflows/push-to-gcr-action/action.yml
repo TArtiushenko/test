@@ -6,10 +6,6 @@ inputs:
     required: true
   image:
     required: true
-    default: 'image'
-  tag:
-    requred: false
-    default: 'latest'
 runs:
   using: "composite"
   steps:
@@ -20,5 +16,5 @@ runs:
     - run: gcloud auth configure-docker -q
       shell: bash
     - run: |
-        docker push "gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"
+        docker push "${{ inputs.image }}"
       shell: bash
