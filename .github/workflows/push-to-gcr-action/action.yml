@@ -1,0 +1,16 @@
+name: 'Push to gcr'
+inputs:
+  project-id: 
+    required: true
+    default: 'project'
+  image:
+    required: true
+    default: 'image'
+  tag:
+    requred: false
+    default: 'latest'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        docker push "gcr.io/${{ inputs.project-id }}/${{ inputs.image }}:${{ inputs.tag }}"

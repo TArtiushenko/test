@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches: [dev]
-    paths-ignore: 
-      - '.github/workflows/**'
+#    paths-ignore: 
+#      - '.github/workflows/**'
   pull_request:
     branches: [release, main]
 
@@ -83,5 +83,4 @@ jobs:
 
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: |-
-          docker push "gcr.io/$PROJECT_ID/$IMAGE:$IMAGE_TAG"
+        uses: ./.github/workflows/push-to-gcr-action
