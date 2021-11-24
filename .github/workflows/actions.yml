@@ -1,3 +1,12 @@
+# variables (secrets):
+# GCP_SERVICE_ACCOUNT_KEY - json key
+# GCP_PROJECT - google project name
+# SLACK_WEBHOOK - webhook url
+# variables inside script:
+# GCP_ZONE - google artifact registry zone
+# IMAGE - image name
+# REPOSITORY - repository name
+
 name: CI
 
 on:
