@@ -100,7 +100,7 @@ jobs:
 
       # Send status message depending job.status
       - name: Sending status message
-        if: ${{ github.base_ref == 'main' }}
+        if: ${{ always() && github.base_ref == 'main' }}
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
