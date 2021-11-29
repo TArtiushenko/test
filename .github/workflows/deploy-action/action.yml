@@ -1,0 +1,36 @@
+name: Deploy image
+  service-account-key:
+    required: true
+  zone:
+    required: true
+    default: europe
+  cluster:
+    required: true
+  image:
+    required: true
+  runs:
+    uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e504
+    with:
+        cluster_name: ${{ inputs.cluster }}
+        location: ${{ inputs.zone }}
+        credentials: ${{ inputs.service-account-key }}
+    - run: sed -i 's/ZONE\/PROJECT_ID\/REPOSITORY\/IMAGE:TAG/${{ inputs.image }}/' .deployment/deploy.yml
+      shell: bash
+      
+    - if: ${{ startsWith(IMAGE_VERSION, 'dev-') }}
+      run: sed -i 's/NAMESPACE/dev/' .deployment/deploy.yml
+      slell: bash
+
+    - if: ${{ startsWith(IMAGE_VERSION, 'rc-') }}
+      run: sed -i 's/NAMESPACE/stage/' .deployment/deploy.yml
+      slell: bash
+
+    - if: ${{ startsWith(IMAGE_VERSION, 'v') }}
+      run: sed -i 's/NAMESPACE/prod/' .deployment/deploy.yml
+      slell: bash
+
+    - run: | 
+        kubectl apply -f .deployment/deploy.yml
+        kubectl rollout status deployment/go-deployment
+        kubectl get services -o wide
+      shell: bash

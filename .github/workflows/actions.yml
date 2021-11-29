@@ -3,23 +3,28 @@ name: CI
 on:
   push:
     branches: [dev]
-#    paths-ignore: 
+    paths-ignore: 
 #      - '.github/workflows/**'
+      - '.deployments/**'
     tags:
       - 'v[0-9].[0-9]+.[0-9]+'
       - 'rc-[0-9]+'
   pull_request:
     branches: [release, main]
+    paths-ignore: 
+#      - '.github/workflows/**'
+      - '.deployments/**'
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
   REPOSITORY: test #for artifact registry only
+  CLUSTER_NAME: test-cluster
 
 jobs:
   Setup-build-publish:
-    name: Setup, Build, Push
+    name: Setup, Build, Push, Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -82,3 +87,11 @@ jobs:
           project-id: ${{ secrets.GCP_PROJECT }}
           image: ${{ steps.image-tag.outputs.gar-tag }}
           zone: $GCP_ZONE
+
+      - name: Deploy
+        uses: ./.github/workflows/deploy-action
+        with:
+          service-account-key: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT_KEY }}
+          image: ${{ steps.image-tag.outputs.gar-tag }}
+          zone: ${{ GCP_ZONE }}
+          cluster: ${{ CLUSTER_NAME }}
