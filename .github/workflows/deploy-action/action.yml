@@ -19,7 +19,7 @@ runs:
         credentials: ${{ inputs.service-account-key }}
 
     - run: |
-        sed -i 's|ZONE/PROJECT_ID/REPOSITORY/IMAGE:TAG|${{ inputs.image }}|' .deployments/deploy.yml
+        sed -i 's|IMAGE|${{ inputs.image }}|' .deployments/deploy.yml
       shell: bash
 
     - if: ${{ startsWith(env.IMAGE_VERSION, 'dev-') }}
@@ -38,5 +38,5 @@ runs:
         namespace=$(grep namespace .deployments/deploy.yml | awk -F ':' '{print $2}')
         kubectl apply -f .deployments/deploy.yml
         kubectl rollout status deployments/go-deployment -n $namespace
-        kubectl get services -o wide
+#        kubectl get services -o wide
       shell: bash
