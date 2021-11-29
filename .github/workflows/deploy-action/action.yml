@@ -19,7 +19,7 @@ runs:
         credentials: ${{ inputs.service-account-key }}
 
     - run: |
-        sed -i 's|ZONE/PROJECT_ID/REPOSITORY/IMAGE:TAG|${{ inputs.image }}|' .deployments/deploy.yml
+        sed -i 's|IMAGE|${{ inputs.image }}|' .deployments/deploy.yml
       shell: bash
 
     - if: ${{ startsWith(env.IMAGE_VERSION, 'dev-') }}
