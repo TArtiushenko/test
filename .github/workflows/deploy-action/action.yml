@@ -10,6 +10,7 @@ inputs:
   image:
     required: true
 runs:
+  using: "composite"
   steps:
     - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e504
       with:
