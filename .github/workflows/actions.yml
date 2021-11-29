@@ -1,4 +1,4 @@
-name: CI
+name: CICD
 
 on:
   push:
@@ -96,3 +96,12 @@ jobs:
           image: ${{ steps.image-tag.outputs.gcr-tag }}
           zone: ${{ env.CLUSTER_ZONE }}
           cluster: ${{ env.CLUSTER_NAME }}
+
+      # Send status message depending job.status
+      - name: Sending status message
+        if: ${{ github.base_ref == 'main' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: "Deploy ${{ env.IMAGE_VERSION }} ${{ job.status }}"
+          SLACK_COLOR: ${{ job.status }}
