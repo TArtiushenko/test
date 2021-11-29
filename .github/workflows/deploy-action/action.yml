@@ -36,6 +36,6 @@ runs:
 
     - run: | 
         kubectl apply -f .deployments/deploy.yml
-        kubectl rollout status deployments/go-deployments
+        kubectl rollout status deployments/go-deployment
         kubectl get services -o wide
       shell: bash
