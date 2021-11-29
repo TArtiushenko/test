@@ -15,6 +15,5 @@ runs:
         project_id: ${{ inputs.project-id }}
     - run: gcloud auth configure-docker -q
       shell: bash
-    - run: |
-        docker push "${{ inputs.image }}"
+    - run: docker push "${{ inputs.image }}"
       shell: bash
