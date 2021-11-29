@@ -16,20 +16,21 @@ runs:
         cluster_name: ${{ inputs.cluster }}
         location: ${{ inputs.zone }}
         credentials: ${{ inputs.service-account-key }}
+
     - run: sed -i 's/ZONE\/PROJECT_ID\/REPOSITORY\/IMAGE:TAG/${{ inputs.image }}/' .deployment/deploy.yml
       shell: bash
-      
+
     - if: ${{ startsWith(IMAGE_VERSION, 'dev-') }}
       run: sed -i 's/NAMESPACE/dev/' .deployment/deploy.yml
-      slell: bash
+      shell: bash
 
     - if: ${{ startsWith(IMAGE_VERSION, 'rc-') }}
       run: sed -i 's/NAMESPACE/stage/' .deployment/deploy.yml
-      slell: bash
+      shell: bash
 
     - if: ${{ startsWith(IMAGE_VERSION, 'v') }}
       run: sed -i 's/NAMESPACE/prod/' .deployment/deploy.yml
-      slell: bash
+      shell: bash
 
     - run: | 
         kubectl apply -f .deployment/deploy.yml
