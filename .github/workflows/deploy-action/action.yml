@@ -18,23 +18,24 @@ runs:
         location: ${{ inputs.zone }}
         credentials: ${{ inputs.service-account-key }}
 
-    - run: sed -i 's/ZONE\/PROJECT_ID\/REPOSITORY\/IMAGE:TAG/${{ inputs.image }}/' .deployment/deploy.yml
+    - run: |
+        sed -i 's|ZONE/PROJECT_ID/REPOSITORY/IMAGE:TAG|${{ inputs.image }}|' .deployments/deploy.yml
       shell: bash
 
     - if: ${{ startsWith(env.IMAGE_VERSION, 'dev-') }}
-      run: sed -i 's/NAMESPACE/dev/' .deployment/deploy.yml
+      run: sed -i 's/NAMESPACE/dev/' .deployments/deploy.yml
       shell: bash
 
     - if: ${{ startsWith(env.IMAGE_VERSION, 'rc-') }}
-      run: sed -i 's/NAMESPACE/stage/' .deployment/deploy.yml
+      run: sed -i 's/NAMESPACE/stage/' .deployments/deploy.yml
       shell: bash
 
     - if: ${{ startsWith(env.IMAGE_VERSION, 'v') }}
-      run: sed -i 's/NAMESPACE/prod/' .deployment/deploy.yml
+      run: sed -i 's/NAMESPACE/prod/' .deployments/deploy.yml
       shell: bash
 
     - run: | 
-        kubectl apply -f .deployment/deploy.yml
-        kubectl rollout status deployment/go-deployment
+        kubectl apply -f .deployments/deploy.yml
+        kubectl rollout status deployments/go-deployments
         kubectl get services -o wide
       shell: bash
