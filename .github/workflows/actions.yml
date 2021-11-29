@@ -93,5 +93,5 @@ jobs:
         with:
           service-account-key: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT_KEY }}
           image: ${{ steps.image-tag.outputs.gar-tag }}
-          zone: ${{ GCP_ZONE }}
-          cluster: ${{ CLUSTER_NAME }}
+          zone: ${{ env.GCP_ZONE }}
+          cluster: ${{ env.CLUSTER_NAME }}
