@@ -67,7 +67,7 @@ jobs:
       # After successful build add tag
       - name: Update release number
         if: ${{ github.base_ref == 'main' || github.base_ref == 'release' }}
-        run: git tag $IMAGE_VERSION && git push --tags
+        run: git tag $IMAGE_VERSION && git push origin $IMAGE_VERSION
 
       # Push the Docker image to Google Container Registry
       - name: Publish
