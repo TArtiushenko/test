@@ -21,6 +21,7 @@ env:
   IMAGE: alpine_main
   REPOSITORY: test #for artifact registry only
   CLUSTER_NAME: test-cluster
+  CLUSTER_ZONE: europe-central2
 
 jobs:
   Setup-build-publish:
@@ -93,5 +94,5 @@ jobs:
         with:
           service-account-key: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT_KEY }}
           image: ${{ steps.image-tag.outputs.gar-tag }}
-          zone: ${{ env.GCP_ZONE }}
+          zone: ${{ env.CLUSTER_ZONE }}
           cluster: ${{ env.CLUSTER_NAME }}
