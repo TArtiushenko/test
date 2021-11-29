@@ -105,3 +105,4 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_MESSAGE: "Deploy ${{ env.IMAGE_VERSION }} ${{ job.status }}"
           SLACK_COLOR: ${{ job.status }}
+
