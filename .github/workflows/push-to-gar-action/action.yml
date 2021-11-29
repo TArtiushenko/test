@@ -7,7 +7,6 @@ inputs:
     default: europe
   project-id: 
     required: true
-    default: 'project'
   image:
     required: true
 runs:
@@ -18,12 +17,11 @@ runs:
         service_account_key: ${{ inputs.service-account-key }}
         project_id: ${{ inputs.project-id }}
 
-    - run: echo '${{ inputs.service-account-key }}' > /tmp/gcp_key.json
-      shell: bash
-    - run: gcloud auth activate-service-account --key-file=/tmp/gcp_key.json
+    - run: |
+         echo '${{ inputs.service-account-key }}' > /tmp/gcp_key.json
+         gcloud auth activate-service-account --key-file=/tmp/gcp_key.json
       shell: bash
     - run: gcloud auth configure-docker ${{ inputs.zone }}-docker.pkg.dev
       shell: bash
-    - run: |
-        docker push "${{ inputs.image }}"
+    - run: docker push "${{ inputs.image }}"
       shell: bash

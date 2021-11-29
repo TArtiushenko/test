@@ -1,25 +1,31 @@
-name: CI
+name: CICD
 
 on:
   push:
     branches: [dev]
-#    paths-ignore: 
+    paths-ignore: 
 #      - '.github/workflows/**'
+      - '.deployments/**'
     tags:
       - 'v[0-9].[0-9]+.[0-9]+'
       - 'rc-[0-9]+'
   pull_request:
     branches: [release, main]
+    paths-ignore: 
+#      - '.github/workflows/**'
+      - '.deployments/**'
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   GCP_ZONE: europe   # TODO: update to cluster zone
   IMAGE: alpine_main
   REPOSITORY: test #for artifact registry only
+  CLUSTER_NAME: test-cluster
+  CLUSTER_ZONE: europe-central2
 
 jobs:
   Setup-build-publish:
-    name: Setup, Build, Push
+    name: Setup, Build, Push, Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -70,15 +76,32 @@ jobs:
           project-id: ${{ secrets.GCP_PROJECT }}
           image: ${{ steps.image-tag.outputs.gcr-tag }}
 
-      # Re-tag image for artifact registry
-      - name: Re-tag
-        run: docker tag ${{ steps.image-tag.outputs.gcr-tag }} ${{ steps.image-tag.outputs.gar-tag }}
+      # # Re-tag image for artifact registry
+      # - name: Re-tag
+      #   run: docker tag ${{ steps.image-tag.outputs.gcr-tag }} ${{ steps.image-tag.outputs.gar-tag }}
 
-      # Push the Docker image to Google Artifact Registry
-      - name: Publish
-        uses: ./.github/workflows/push-to-gar-action
-        with: 
-          service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          project-id: ${{ secrets.GCP_PROJECT }}
-          image: ${{ steps.image-tag.outputs.gar-tag }}
-          zone: $GCP_ZONE
+      # # Push the Docker image to Google Artifact Registry
+      # - name: Publish
+      #   uses: ./.github/workflows/push-to-gar-action
+      #   with: 
+      #     service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      #     project-id: ${{ secrets.GCP_PROJECT }}
+      #     image: ${{ steps.image-tag.outputs.gar-tag }}
+      #     zone: $GCP_ZONE
+
+      - name: Deploy
+        uses: ./.github/workflows/deploy-action
+        with:
+          service-account-key: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT_KEY }}
+          image: ${{ steps.image-tag.outputs.gcr-tag }}
+          zone: ${{ env.CLUSTER_ZONE }}
+          cluster: ${{ env.CLUSTER_NAME }}
+
+      # Send status message depending job.status
+      - name: Sending status message
+        if: ${{ github.base_ref == 'main' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: "Deploy ${{ env.IMAGE_VERSION }} ${{ job.status }}"
+          SLACK_COLOR: ${{ job.status }}
