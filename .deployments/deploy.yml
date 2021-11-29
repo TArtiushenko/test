@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: go-hello-world
-        image: "ZONE/PROJECT_ID/REPOSITORY/IMAGE:TAG"
+        image: "IMAGE"
         ports:
         - containerPort: 8080
 
