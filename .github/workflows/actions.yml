@@ -91,7 +91,7 @@ jobs:
       #     zone: $GCP_ZONE
 
       - name: Deploy
-        if: ${{ github.base_ref != 'kustomize' }}
+        if: ${{ github.ref_name != 'kustomize' }}
         uses: ./.github/workflows/deploy-action
         with:
           service-account-key: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT_KEY }}
