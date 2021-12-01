@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: go-hello-world
-        image: gcr.io/valid-volt-331607/alpine_main:dev-1638366458
+        image: gcr.io/valid-volt-331607/alpine_main:dev-1638368765
         ports:
         - containerPort: 8080
 
