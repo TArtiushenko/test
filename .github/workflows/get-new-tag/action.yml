@@ -7,7 +7,7 @@ runs:
       run: git fetch --tags
       shell: bash
 
-    - if: ${{ github.ref_name == 'dev' || github.ref_name == 'dev' }}
+    - if: ${{ github.ref_name == 'dev' || github.ref_name == 'kustomize' }}
       run: echo "IMAGE_VERSION=dev-$(date +'%s')" >> $GITHUB_ENV
       shell: bash
 
