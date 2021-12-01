@@ -107,7 +107,8 @@ jobs:
 
       - name: Update manifest
         run: |
-          sed -i 's|image: .*|image: ${{ steps.image-tag.outputs.gcr-tag }}|' ./kustomize/deployment.yml
+          sed -i 's|image: .*|image: ${{ steps.image-tag.outputs.gcr-tag }}|' ./.deployments/kustomize/deployment.yml
+          mv -f ./.deployments/kustomize ./
 
       - name: Commit manifest
         uses: EndBug/add-and-commit@v7
