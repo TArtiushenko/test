@@ -105,7 +105,7 @@ jobs:
 
       - name: Commit manifest
         uses: EndBug/add-and-commit@v7
-          with:
+        with:
           add: './.deployments/kustomize/deployment.yml'
           message: "[ci skip] deploy from ${{ env.IMAGE_VERSION }}"
           signoff: true
