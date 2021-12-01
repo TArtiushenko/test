@@ -99,22 +99,24 @@ jobs:
           zone: ${{ env.CLUSTER_ZONE }}
           cluster: ${{ env.CLUSTER_NAME }}
 
+      - name: Update manifest
+        run: |
+          sed -i 's|image: .*|image: ${{ steps.image-tag.outputs.gcr-tag }}|' ./.deployments/kustomize/deployment.yml
+
       - name: Prepare deploy branch
         run: |
           git -c protocol.version=2 fetch \
             --no-tags --prune --progress --no-recurse-submodules \
             --depth=1 origin deploy
-
-      - name: Update manifest
-        run: |
-          sed -i 's|image: .*|image: ${{ steps.image-tag.outputs.gcr-tag }}|' ./.deployments/kustomize/deployment.yml
+          git checkout deploy
           mv -f ./.deployments/kustomize ./
+          git diff
 
       - name: Commit manifest
         uses: EndBug/add-and-commit@v7
         with:
-          branch: deploy
           add: './kustomize'
+          branch: deploy
           message: "[ci skip] deploy from ${{ env.IMAGE_VERSION }}"
           signoff: true
 
