@@ -27,3 +27,4 @@ images are pushed to google container registry or artifact registry (commented o
 
 slack messages on build and deploy to prod  
  
+ flux added
