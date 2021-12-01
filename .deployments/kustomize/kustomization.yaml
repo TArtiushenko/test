@@ -1,5 +1,0 @@
-commonLabels:
-  app: go
-resources:
-- namespace.yml
-- deployment.yml
