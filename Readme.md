@@ -22,4 +22,3 @@ triggers:
 
  outdated
 
- test 3
