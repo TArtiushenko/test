@@ -35,7 +35,7 @@ runs:
       shell: bash
 
     - run: | 
-        namespace=$(grep namespace .deployments/deploy.yml | awk -F ':' '{print $2}')
+        namespace=$(awk '/namespace:/{print $2}' .deployments/deploy.yml)
         kubectl apply -f .deployments/deploy.yml
         kubectl rollout status deployments/go-deployment -n $namespace
 #        kubectl get services -o wide
